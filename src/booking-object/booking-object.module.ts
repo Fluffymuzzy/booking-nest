@@ -8,5 +8,6 @@ import { BookingObject } from './model/booking-object.model';
   imports: [SequelizeModule.forFeature([BookingObject])],
   controllers: [BookingObjectController],
   providers: [BookingObjectService],
+  exports: [SequelizeModule],
 })
 export class BookingObjectModule {}

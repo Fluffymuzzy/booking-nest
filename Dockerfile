@@ -1,8 +1,8 @@
-FROM node:16
+FROM node:latest
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json* ./
 
 RUN npm install
 
