@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BookingObjectModule } from './booking-object/booking-object.module';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
       inject: [ConfigService],
     }),
     BookingObjectModule,
+    BookingsModule,
   ],
   controllers: [],
   providers: [],
