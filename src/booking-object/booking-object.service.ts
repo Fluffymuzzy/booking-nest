@@ -25,7 +25,9 @@ export class BookingObjectService {
       });
       return bookingObject.save();
     } catch (e) {
-      throw new BadRequestException(e.message);
+      throw new BadRequestException(
+        'Error creating booking object. ' + e.message,
+      );
     }
   }
   // -----------------------------------------------------------------------------------------
@@ -33,7 +35,9 @@ export class BookingObjectService {
     try {
       return await this.bookingObjectModel.findAll();
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(
+        'Error retrieving booking objects. ' + e.message,
+      );
     }
   }
   // -----------------------------------------------------------------------------------------
@@ -41,11 +45,13 @@ export class BookingObjectService {
     try {
       const bookingObject = await this.bookingObjectModel.findByPk(id);
       if (!bookingObject) {
-        throw new NotFoundException();
+        throw new NotFoundException(`Booking object with ID ${id} not found.`);
       }
       return bookingObject;
     } catch (e) {
-      throw new InternalServerErrorException(e.message);
+      throw new InternalServerErrorException(
+        `Error finding booking object with ID ${id}. ` + e.message,
+      );
     }
   }
   // -----------------------------------------------------------------------------------------
@@ -57,7 +63,9 @@ export class BookingObjectService {
       const bookingObject = await this.findOne(id);
       return bookingObject.update({ ...updateBookingObjectDto });
     } catch (e) {
-      throw new BadRequestException(e.message);
+      throw new BadRequestException(
+        `Error updating booking object with ID ${id}. ` + e.message,
+      );
     }
   }
   // -----------------------------------------------------------------------------------------
@@ -66,7 +74,9 @@ export class BookingObjectService {
       const bookingObject = await this.findOne(id);
       await bookingObject.destroy();
     } catch (e) {
-      throw new InternalServerErrorException(e);
+      throw new InternalServerErrorException(
+        `Error deleting booking object with ID ${id}. ` + e.message,
+      );
     }
   }
 }

@@ -75,6 +75,11 @@ export class BookingsService {
           "This booking object is already booked for the given dates."
         );
       }
+
+      if (new Date(createBookingDto.startDate) >= new Date(createBookingDto.endDate)) {
+        throw new ConflictException('The end date must be later than the start date.');
+      }
+      
       const booking = await this.bookingModel.create({
         bookingObjectId,
         startDate: start,
@@ -136,6 +141,10 @@ export class BookingsService {
         throw new ConflictException("This object is already booked for the given dates.");
       }
   
+      if (new Date(updateBookingDto.startDate) >= new Date(updateBookingDto.endDate)) {
+        throw new ConflictException('The end date must be later than the start date.');
+      }
+
       await currentBooking.update({ startDate: start, endDate: end });
 
       return currentBooking;
