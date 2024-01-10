@@ -39,16 +39,18 @@ export class BookingsService {
           {
             startDate: {
               [Op.lt]: endDate,
+              [Op.ne]: startDate,
             },
             endDate: {
               [Op.gt]: startDate,
+              [Op.ne]: endDate,
             },
           },
         ],
       },
     });
 
-    return overlappingBookings < bookingObject.availableUnits;
+    return overlappingBookings === 0 || bookingObject.availableUnits > 0;
   }
   // -----------------------------------------------------------------------------------------
   async create(createBookingDto: CreateBookingDto): Promise<Booking> {
@@ -64,6 +66,10 @@ export class BookingsService {
         );
       }
 
+      if (bookingObject.availableUnits <= 0) {
+        throw new ConflictException("No available units for this booking object.");
+      }
+
       if (!(await this.isBookingAvailable(bookingObjectId, start, end))) {
         throw new ConflictException(
           "This booking object is already booked for the given dates."
@@ -74,7 +80,6 @@ export class BookingsService {
         startDate: start,
         endDate: end,
       });
-
       await bookingObject.decrement("availableUnits");
 
       return this.bookingModel.findByPk(booking.id, {
@@ -132,25 +137,12 @@ export class BookingsService {
       }
   
       await currentBooking.update({ startDate: start, endDate: end });
-  
-      if (updateBookingDto.bookingObjectId && updateBookingDto.bookingObjectId !== currentBooking.bookingObjectId) {
-        const oldBookingObject = await this.bookingObject.findByPk(currentBooking.bookingObjectId);
-        const newBookingObject = await this.bookingObject.findByPk(updateBookingDto.bookingObjectId);
-  
-        if (newBookingObject.availableUnits <= 0) {
-          throw new ConflictException("There are no available units for the new booking object.");
-        }
-  
-        await oldBookingObject.increment('availableUnits');
-        await newBookingObject.decrement('availableUnits');
-      }
-  
+
       return currentBooking;
     } catch (e) {
       throw new InternalServerErrorException(`Error updating booking with ID "${id}". ` + e.message);
     }
   }
-  
   // -----------------------------------------------------------------------------------------
   async remove(id: number): Promise<void> {
     try {
